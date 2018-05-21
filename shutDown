@@ -1,0 +1,9 @@
+#! /bin/bash
+docker container stop comm_client
+docker container rm comm_client
+docker container stop router
+docker container rm router
+docker container stop comm_server
+docker container rm comm_server
+docker network rm client_network
+docker network rm server_network
