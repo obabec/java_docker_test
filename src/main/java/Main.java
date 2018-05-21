@@ -5,8 +5,10 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.command.BuildImageResultCallback;
 import network.DockerNetwork;
+import org.graalvm.compiler.core.common.util.ArraySet;
 
 import java.io.File;
+import java.util.Set;
 
 
 public class Main {
@@ -15,6 +17,10 @@ public class Main {
         DockerClient dockerClient = DockerClientBuilder.getInstance(DefaultDockerClientConfig.createDefaultConfigBuilder().build()).build();
 
         Info info = dockerClient.infoCmd().exec();
+        File dockerDir = new File("~/Documents/java_docker_test/DockerFiles");
+        Set<String> tagSet = new ArraySet<>();
+        tagSet.add("docker_test:01");
+        dockerClient.buildImageCmd(dockerDir).withTags(tagSet).exec(new BuildImageResultCallback()).awaitImageId();
 
         String subnet =  "172.22.0.0/16";
         String subnet2 = "172.23.0.0/16";
@@ -23,7 +29,7 @@ public class Main {
         String clientNetwork = dockerNetwork.createNetworkWithSubnet(subnet2, "client_network", dockerClient, "172.23.0.1");
 
 
-        CreateContainerResponse router = dockerClient.createContainerCmd("testino:07")
+        CreateContainerResponse router = dockerClient.createContainerCmd(((ArraySet<String>) tagSet).get(0))
                 .withName("router")
                 .exec();
 
@@ -33,11 +39,11 @@ public class Main {
         dockerClient.startContainerCmd(router.getId()).exec();
 
 
-        CreateContainerResponse client = dockerClient.createContainerCmd("testino:07")
+        CreateContainerResponse client = dockerClient.createContainerCmd(((ArraySet<String>) tagSet).get(0))
                 .withName("comm_client")
                 .exec();
 
-        CreateContainerResponse server = dockerClient.createContainerCmd("testino:07")
+        CreateContainerResponse server = dockerClient.createContainerCmd(((ArraySet<String>) tagSet).get(0))
                 .withName("comm_server")
                 .exec();
 
