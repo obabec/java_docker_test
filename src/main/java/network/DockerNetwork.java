@@ -2,7 +2,6 @@ package network;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateNetworkResponse;
-import com.github.dockerjava.api.command.InspectNetworkCmd;
 import com.github.dockerjava.api.model.Network;
 
 public class DockerNetwork {

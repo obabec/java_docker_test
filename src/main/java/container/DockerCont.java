@@ -3,8 +3,8 @@ package container;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
-import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
+import org.omg.CORBA.TIMEOUT;
 
 import java.util.concurrent.TimeUnit;
 
@@ -31,10 +31,10 @@ public class DockerCont {
 
         ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(container.getId())
                 .withAttachStdout(true)
-                .withCmd(commandWithArguments[0], commandWithArguments[1])
+                .withCmd(commandWithArguments)
                 .withUser("root")
                 .exec();
-        dockerClient.execStartCmd(execCreateCmdResponse.getId()).exec(new ExecStartResultCallback(System.out, System.err)).awaitCompletion();
+        dockerClient.execStartCmd(execCreateCmdResponse.getId()).exec(new ExecStartResultCallback(System.out, System.err)).awaitCompletion(10,TimeUnit.SECONDS);
     }
 
 

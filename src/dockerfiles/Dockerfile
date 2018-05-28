@@ -31,6 +31,6 @@ RUN apt-get update \
 
 WORKDIR /
 ADD setGW setGW
-#ADD DataClient-1.0-SNAPSHOT.jar DataClient-1.0-SNAPSHOT.jar
-#ADD DataServer-1.0-SNAPSHOT.jar DataServer-1.0-SNAPSHOT.jar
+ADD DataClient-1.0-SNAPSHOT.jar /root/DataClient.jar
+ADD DataServer-1.0-SNAPSHOT.jar /root/DataServer.jar
 CMD ["/sbin/my_init"]
