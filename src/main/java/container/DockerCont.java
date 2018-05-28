@@ -2,6 +2,11 @@ package container;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.command.ExecCreateCmdResponse;
+import com.github.dockerjava.api.model.Frame;
+import com.github.dockerjava.core.command.ExecStartResultCallback;
+
+import java.util.concurrent.TimeUnit;
 
 public class DockerCont {
     private DockerClient dockerClient;
@@ -12,6 +17,8 @@ public class DockerCont {
 
     public CreateContainerResponse createContainer(String tag, String name) {
         return dockerClient.createContainerCmd(tag)
+                .withPrivileged(true)
+                .withCmd()
                 .withName(name)
                 .exec();
     }
@@ -19,5 +26,16 @@ public class DockerCont {
         dockerClient.connectToNetworkCmd().withNetworkId(networkId).withContainerId(cont.getId()).exec();
 
     }
+    public void runCommand(   final CreateContainerResponse container,
+                               final String[] commandWithArguments) throws InterruptedException {
+
+        ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(container.getId())
+                .withAttachStdout(true)
+                .withCmd(commandWithArguments[0], commandWithArguments[1])
+                .withUser("root")
+                .exec();
+        dockerClient.execStartCmd(execCreateCmdResponse.getId()).exec(new ExecStartResultCallback(System.out, System.err)).awaitCompletion();
+    }
+
 
 }
