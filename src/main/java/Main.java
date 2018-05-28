@@ -25,7 +25,7 @@ public class Main {
 
         String tag = "docker_test:01";
         DockerImage dockerImage = new DockerImage();
-        dockerImage.buildImage(dockerClient, "docker_test:01", new File("/home/obabec/Desktop/images"));
+        dockerImage.buildImage(dockerClient, "docker_test:01", new File("src/dockerfiles"));
 
         DockerNetwork dockerNetwork = new DockerNetwork();
         Network serverNetwork =  dockerNetwork.createNetworkWithSubnet("172.22.0.0/16", "server_network", dockerClient, "172.22.0.1");
