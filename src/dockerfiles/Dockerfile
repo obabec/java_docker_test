@@ -1,4 +1,4 @@
-FROM phusion/baseimage:0.9.17
+FROM phusion/baseimage:0.10.1
 
 RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
 
@@ -25,7 +25,7 @@ RUN echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >> ~/.bashrc
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN apt-get update \
-    && apt-get install -y traceroute curl dnsutils netcat-openbsd jq \ 
+    && apt-get install -y traceroute curl dnsutils netcat-openbsd jq \
                           net-tools \
     && rm -rf /var/lib/apt/lists/*
 
