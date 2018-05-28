@@ -17,6 +17,7 @@ public class DockerCont {
     }
     public void connectContToNetwork(CreateContainerResponse cont, String networkId) {
         dockerClient.connectToNetworkCmd().withNetworkId(networkId).withContainerId(cont.getId()).exec();
+
     }
 
 }
