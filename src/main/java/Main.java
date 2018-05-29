@@ -20,16 +20,18 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         DockerClient dockerClient = DockerClientBuilder.getInstance(DefaultDockerClientConfig.createDefaultConfigBuilder().build()).build();
 
-        String tag = "docker_test:01";
+        String tagApp = "app_test:01";
+        String tagRouter  = "router_test:01";
         DockerImage dockerImage = new DockerImage();
-        dockerImage.buildImage(dockerClient, "docker_test:01", new File("src/dockerfiles"));
+        dockerImage.buildImage(dockerClient, tagApp, new File("src/dockerfiles/app"));
+        dockerImage.buildImage(dockerClient, tagRouter, new File("src/dockerfiles/router"));
 
         DockerNetwork dockerNetwork = new DockerNetwork();
         Network serverNetwork =  dockerNetwork.createNetworkWithSubnet("172.22.0.0/16", "server_network", dockerClient, "172.22.0.1");
         Network clientNetwork = dockerNetwork.createNetworkWithSubnet("172.23.0.0/16", "client_network", dockerClient, "172.23.0.1");
 
         DockerCont dockerCont = new DockerCont(dockerClient);
-        CreateContainerResponse router = dockerCont.createContainer(tag, "router");
+        CreateContainerResponse router = dockerCont.createContainer(tagRouter, "router");
 
 
         dockerCont.connectContToNetwork(router, clientNetwork.getId());
@@ -37,8 +39,8 @@ public class Main {
         dockerClient.startContainerCmd(router.getId()).exec();
 
 
-        CreateContainerResponse client = dockerCont.createContainer(tag, "comm_client");
-        CreateContainerResponse server = dockerCont.createContainer(tag, "comm_server");
+        CreateContainerResponse client = dockerCont.createContainer(tagApp, "comm_client");
+        CreateContainerResponse server = dockerCont.createContainer(tagApp, "comm_server");
 
         dockerCont.connectContToNetwork(client, clientNetwork.getId());
         dockerCont.connectContToNetwork(server, serverNetwork.getId());
@@ -51,12 +53,11 @@ public class Main {
 
         logger.debug("Starting GW setup");
 
-        dockerCont.runCommand(server, "java -jar /root/DataServer.jar");
+
         dockerCont.runCommand(server, "./setGW " + containerNetworkSettings.getNetworks().get(serverNetwork.getName()).getIpAddress());
 
         dockerCont.runCommand(client,  "./setGW " + containerNetworkSettings.getNetworks().get(clientNetwork.getName()).getIpAddress());
 
-        dockerCont.runCommand(client, "java -jar /root/DataClient.jar " + serverResponse.getNetworks().get(serverNetwork.getName()).getIpAddress());
 
         logger.info("Server response" + containerNetworkSettings.getNetworks().get(serverNetwork.getName()).getIpAddress());
         logger.info("Client response" + containerNetworkSettings.getNetworks().get(clientNetwork.getName()).getIpAddress());
