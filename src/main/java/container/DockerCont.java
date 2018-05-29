@@ -26,9 +26,11 @@ public class DockerCont {
         dockerClient.connectToNetworkCmd().withNetworkId(networkId).withContainerId(cont.getId()).exec();
 
     }
-    public void runCommand(   final CreateContainerResponse container,
-                               final String[] commandWithArguments) throws InterruptedException {
 
+    public void runCommand(   final CreateContainerResponse container,
+                               final String command) throws InterruptedException {
+
+        String[] commandWithArguments = command.split("\\s+");
         ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(container.getId())
                 .withAttachStdout(true)
                 .withCmd(commandWithArguments)

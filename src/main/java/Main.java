@@ -49,24 +49,14 @@ public class Main {
         NetworkSettings serverResponse = dockerClient.inspectContainerCmd("comm_server").exec().getNetworkSettings();
         NetworkSettings containerNetworkSettings = containerResponse.getNetworkSettings();
 
-        String[] commands = new String[4];
-        commands[0] = "java";
-        commands[1] = "-jar";
-        commands[2] = "/root/DataServer.jar";
-        dockerCont.runCommand(server, commands);
-        commands[2] = "";
-        commands[0] = "./setGW";
-        commands[1] = containerNetworkSettings.getNetworks().get(serverNetwork.getName()).getIpAddress();
-        dockerCont.runCommand(server, commands);
+        logger.debug("Starting GW setup");
 
-        commands[1] = containerNetworkSettings.getNetworks().get(clientNetwork.getName()).getIpAddress();
-        dockerCont.runCommand(client,  commands);
+        dockerCont.runCommand(server, "java -jar /root/DataServer.jar");
+        dockerCont.runCommand(server, "./setGW " + containerNetworkSettings.getNetworks().get(serverNetwork.getName()).getIpAddress());
 
-        commands[0] = "java";
-        commands[1] = "-jar";
-        commands[2] = "/root/DataClient.jar";
-        commands[3] = serverResponse.getNetworks().get(serverNetwork.getName()).getIpAddress();
-        dockerCont.runCommand(client, commands);
+        dockerCont.runCommand(client,  "./setGW " + containerNetworkSettings.getNetworks().get(clientNetwork.getName()).getIpAddress());
+
+        dockerCont.runCommand(client, "java -jar /root/DataClient.jar " + serverResponse.getNetworks().get(serverNetwork.getName()).getIpAddress());
 
         logger.info("Server response" + containerNetworkSettings.getNetworks().get(serverNetwork.getName()).getIpAddress());
         logger.info("Client response" + containerNetworkSettings.getNetworks().get(clientNetwork.getName()).getIpAddress());
