@@ -1,10 +1,9 @@
-package container;
+package com.redhat.PatrIoT.network_demo.container;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
-import org.omg.CORBA.TIMEOUT;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +35,8 @@ public class DockerCont {
                 .withCmd(commandWithArguments)
                 .withUser("root")
                 .exec();
-        dockerClient.execStartCmd(execCreateCmdResponse.getId()).exec(new ExecStartResultCallback(System.out, System.err)).awaitCompletion(10,TimeUnit.SECONDS);
+        dockerClient.execStartCmd(execCreateCmdResponse.getId()).
+                exec(new ExecStartResultCallback(System.out, System.err)).awaitCompletion(10,TimeUnit.SECONDS);
     }
 
 

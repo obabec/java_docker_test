@@ -8,5 +8,5 @@
  ## CleanUP
   ./shutDown
 ## Image
-Lightweight, powerful Ubuntu based image.
+Lightweight, powerful Ubuntu based com.redhat.PatrIoT.network_demo.image.
 https://github.com/phusion/baseimage-docker

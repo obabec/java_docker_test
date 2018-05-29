@@ -4,40 +4,38 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>groupId</groupId>
+    <groupId>com.redhat.PatrIoT</groupId>
     <artifactId>java_docker_testing</artifactId>
     <version>1.0-SNAPSHOT</version>
 
         <properties>
             <maven.compiler.source>1.6</maven.compiler.source>
             <maven.compiler.target>1.6</maven.compiler.target>
+            <org.slf4j.version>1.7.5</org.slf4j.version>
+            <org.java-docker.version>3.1.0-rc-3</org.java-docker.version>
+            <org.junit.version>5.2.0</org.junit.version>
+            <org.junit.platform.version>1.2.0</org.junit.platform.version>
+            <org.apache.maven.surefire.version>2.21.0</org.apache.maven.surefire.version>
+            <org.apache.maven.checkstyle.version>2.17</org.apache.maven.checkstyle.version>
+            <org.codehouse.mojo.version>1.6.0</org.codehouse.mojo.version>
         </properties>
+
         <build>
             <plugins>
                 <plugin>
-                    <!-- Build an executable JAR -->
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <addClasspath>true</addClasspath>
-                                <classpathPrefix>lib/</classpathPrefix>
-                                <mainClass>Main</mainClass>
-                            </manifest>
-                        </archive>
-                    </configuration>
-                </plugin>
-
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.20.1</version>
+                    <version>${org.apache.maven.surefire.version}</version>
                     <dependencies>
                         <dependency>
-                            <groupId>org.apache.maven.surefire</groupId>
-                            <artifactId>surefire-junit47</artifactId>
-                            <version>2.20.1</version>
+                            <groupId>org.junit.platform</groupId>
+                            <artifactId>junit-platform-surefire-provider</artifactId>
+                            <version>${org.junit.platform.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.junit.jupiter</groupId>
+                            <artifactId>junit-jupiter-engine</artifactId>
+                            <version>${org.junit.version}</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -52,7 +50,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.6.0</version>
+                    <version>${org.codehouse.mojo.version}</version>
                     <executions>
                         <execution>
                             <goals>
@@ -61,26 +59,16 @@
                         </execution>
                     </executions>
                     <configuration>
-                        <mainClass>Main</mainClass>
-                        <arguments>
-                            <argument>argument1</argument>
-                        </arguments>
-                        <systemProperties>
-                            <systemProperty>
-                                <key>myproperty</key>
-                                <value>myvalue</value>
-                            </systemProperty>
-                            ...
-                        </systemProperties>
+                        <mainClass>com.redhat.PatrIoT.network_demo.Main</mainClass>
+                        <cleanupDaemonThreads>false</cleanupDaemonThreads>
                     </configuration>
                 </plugin>
                 <plugin>
-                    <!-- Build an executable JAR -->
                     <artifactId>maven-assembly-plugin</artifactId>
                     <configuration>
                         <archive>
                             <manifest>
-                                <mainClass>Main</mainClass>
+                                <mainClass>com.redhat.PatrIoT.network_demo.Main</mainClass>
                             </manifest>
                         </archive>
                         <descriptorRefs>
@@ -88,19 +76,66 @@
                         </descriptorRefs>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${org.apache.maven.checkstyle.version}</version>
+                    <executions>
+                        <execution>
+                            <id>validate</id>
+                            <phase>validate</phase>
+                            <configuration>
+                                <configLocation>checkstyle.xml</configLocation>
+                            </configuration>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </build>
         <dependencies>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>1.7.5</version>
+                <version>${org.slf4j.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.github.docker-java</groupId>
                 <artifactId>docker-java</artifactId>
-                <version>3.1.0-rc-3</version>
+                <version>${org.java-docker.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${org.junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${org.junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+                <version>${org.junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>${org.junit.platform.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-runner</artifactId>
+                <version>${org.junit.platform.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     
