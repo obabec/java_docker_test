@@ -20,4 +20,13 @@ public class FileUtils {
         }
         return targetFile.getAbsolutePath();
     }
+
+    public void deleteDirWithFiles(File dir) {
+        String[]entries = dir.list();
+        for(String s: entries){
+            File currentFile = new File(dir.getPath(),s);
+            currentFile.delete();
+        }
+        dir.delete();
+    }
 }

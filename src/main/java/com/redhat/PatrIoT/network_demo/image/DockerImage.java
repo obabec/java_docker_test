@@ -5,7 +5,6 @@ import com.github.dockerjava.core.command.BuildImageResultCallback;
 import com.redhat.PatrIoT.network_demo.files.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
 
 public class DockerImage {
@@ -27,37 +26,40 @@ public class DockerImage {
             dockerClient.buildImageCmd(new File(DockerImage.class.getClassLoader().getResource(path).getFile()))
                     .withTag(tag).exec(new BuildImageResultCallback()).awaitImageId();
 
-
         } else if (DockerImage.class.getClassLoader().getResourceAsStream(path) != null){
+
             LOGGER.info("Looking in root");
 
+            File tempDir = new File("tmpDir");
+            tempDir.mkdir();
+
             File docker = new File(fileUtils.convertToFile(DockerImage.class.getClassLoader()
-                    .getResourceAsStream(path), "Dockerfile"));
+                    .getResourceAsStream(path), tempDir.getAbsolutePath() + "/Dockerfile"));
 
             File script = new File(fileUtils.convertToFile(DockerImage.class.getClassLoader()
-                    .getResourceAsStream("app/setGW"), "setGW"));
+                    .getResourceAsStream("app/setGW"), tempDir.getAbsolutePath() + "/setGW"));
 
             script.setExecutable(true);
 
             if (path.contains("app")) {
                 File javaClient = new File(fileUtils.convertToFile(DockerImage.class.getClassLoader()
-                        .getResourceAsStream("app/DataClient-1.0-SNAPSHOT.jar"), "DataClient-1.0-SNAPSHOT.jar"));
+                        .getResourceAsStream("app/DataClient-1.0-SNAPSHOT.jar"),
+                        tempDir.getAbsolutePath() + "/DataClient-1.0-SNAPSHOT.jar"));
 
                 File javaServer = new File(fileUtils.convertToFile(DockerImage.class.getClassLoader()
-                        .getResourceAsStream("app/DataServer-1.0-SNAPSHOT.jar"), "DataServer-1.0-SNAPSHOT.jar"));
-                javaClient.deleteOnExit();
-                javaServer.deleteOnExit();
+                        .getResourceAsStream("app/DataServer-1.0-SNAPSHOT.jar"),
+                        tempDir.getAbsolutePath() + "/DataServer-1.0-SNAPSHOT.jar"));
+
             }
 
             dockerClient.buildImageCmd(docker).withTag(tag).exec(new BuildImageResultCallback()).awaitImageId();
-            script.delete();
-            docker.delete();
+
+            fileUtils.deleteDirWithFiles(tempDir);
 
         } else {
             LOGGER.warn("DOCKERFILES does not exists");
             System.exit(0);
         }
-
     }
 
 
