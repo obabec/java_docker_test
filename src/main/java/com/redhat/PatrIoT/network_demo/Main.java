@@ -25,11 +25,7 @@ public class Main {
         String tagApp = "app_test:01";
         String tagRouter  = "router_test:01";
 
-        DockerImage dockerImage = new DockerImage(dockerClient);
-
-        dockerImage.buildImage(tagApp, "app/Dockerfile");
-        dockerImage.buildImage(tagRouter, "router/Dockerfile");
-
+        buildImages(tagApp, tagRouter, dockerClient);
 
         DockerNetwork dockerNetwork = new DockerNetwork();
         Network serverNetwork = dockerNetwork.createNetworkWithSubnet("172.22.0.0/16", "server_network", dockerClient);
@@ -41,7 +37,6 @@ public class Main {
         dockerCont.connectContToNetwork(router, clientNetwork.getId());
         dockerCont.connectContToNetwork(router, serverNetwork.getId());
         dockerClient.startContainerCmd(router.getId()).exec();
-
 
         CreateContainerResponse client = dockerCont.createContainer(tagApp, "comm_client");
         CreateContainerResponse server = dockerCont.createContainer(tagApp, "comm_server");
@@ -57,7 +52,6 @@ public class Main {
 
         LOGGER.debug("Starting GW setup");
 
-
         dockerCont.runCommand(server, "java -jar /root/DataServer.jar");
 
         dockerCont.runCommand(server, "./setGW " +
@@ -67,7 +61,12 @@ public class Main {
 
         dockerCont.runCommand(client, "java -jar /root/DataClient.jar " +
                 serverResponse.getNetworks().get(serverNetwork.getName()).getIpAddress());
+    }
 
+    public static void buildImages(String tagApp, String tagRouter, DockerClient dockerClient) {
 
+        DockerImage dockerImage = new DockerImage(dockerClient);
+        dockerImage.buildImage(tagApp, "app/Dockerfile");
+        dockerImage.buildImage(tagRouter, "router/Dockerfile");
     }
 }
