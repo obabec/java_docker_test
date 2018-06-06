@@ -41,17 +41,6 @@ public class DockerImage {
 
             script.setExecutable(true);
 
-            if (path.contains("app")) {
-                File javaClient = new File(fileUtils.convertToFile(DockerImage.class.getClassLoader()
-                        .getResourceAsStream("app/DataClient-1.0-SNAPSHOT.jar"),
-                        tempDir.getAbsolutePath() + "/DataClient-1.0-SNAPSHOT.jar"));
-
-                File javaServer = new File(fileUtils.convertToFile(DockerImage.class.getClassLoader()
-                        .getResourceAsStream("app/DataServer-1.0-SNAPSHOT.jar"),
-                        tempDir.getAbsolutePath() + "/DataServer-1.0-SNAPSHOT.jar"));
-
-            }
-
             dockerClient.buildImageCmd(docker).withTag(tag).exec(new BuildImageResultCallback()).awaitImageId();
 
             fileUtils.deleteDirWithFiles(tempDir);
