@@ -1,1 +1,2 @@
-ahoj svete
+ahoj svete ahoj svete:wq
+
